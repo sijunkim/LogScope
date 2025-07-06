@@ -1,0 +1,71 @@
+version: '3.9'
+
+services:
+  frontend:
+    build: ./frontend
+    container_name: logscope-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://localhost:8080
+    networks:
+      - logscope-net
+
+  backend:
+    build: ./backend
+    container_name: logscope-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - ollama
+    volumes:
+      - ./logs:/app/logs
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=logscope
+      - DB_USER=root
+      - DB_PASS=root
+      - LLM_BASE_URL=http://ollama:11434
+    networks:
+      - logscope-net
+
+  mysql:
+    image: mysql:8
+    container_name: logscope-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: logscope
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - logscope-net
+
+  ollama:
+    image: ollama/ollama
+    container_name: logscope-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    networks:
+      - logscope-net
+    command: >
+      bash -c "
+        ollama pull gemma:3b &&
+        sleep infinity
+      "
+
+volumes:
+  mysql_data:
+  ollama_models:
+
+networks:
+  logscope-net:
+    driver: bridge
