@@ -27,6 +27,6 @@ WORKDIR /app
 # 빌드된 파일과 실행 스크립트 복사
 COPY --from=builder /app ./
 
-EXPOSE 13123
+EXPOSE 11431
 
-CMD ["yarn", "preview", "--port", "13123", "--strictPort"]
+CMD ["yarn", "preview", "--port", "11431", "--host", "0.0.0.0", "--strictPort"]

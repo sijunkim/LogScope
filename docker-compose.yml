@@ -7,9 +7,9 @@ services:
       dockerfile: Dockerfile
     container_name: logscope-frontend
     ports:
-      - "13123:13123"
-    depends_on:
-      - backend
+      - "11431:11431"
+    # depends_on:
+    #   - backend
     restart: always
     networks:
       - logscope-net
@@ -18,10 +18,10 @@ services:
     build: ./backend
     container_name: logscope-backend
     ports:
-      - "8080:8080"
-    depends_on:
-      - mysql
-      - ollama
+      - "11432:11432"
+    # depends_on:
+    #   - mysql
+    #   - ollama
     volumes:
       - ./logs:/app/logs
     environment:
