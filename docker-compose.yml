@@ -1,15 +1,16 @@
-version: '3.9'
+version: "3.9"
 
 services:
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: logscope-frontend
     ports:
-      - "3000:3000"
+      - "13123:13123"
     depends_on:
       - backend
-    environment:
-      - VITE_API_URL=http://localhost:8080
+    restart: always
     networks:
       - logscope-net
 
@@ -57,9 +58,12 @@ services:
     networks:
       - logscope-net
     command: >
-      bash -c "
-        ollama pull gemma:3b &&
-        sleep infinity
+      sh -c "
+        ollama serve &
+        PID=$!
+        sleep 5
+        ollama pull gemma:3b
+        wait $PID
       "
 
 volumes:
